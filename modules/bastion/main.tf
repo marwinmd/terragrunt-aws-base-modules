@@ -151,6 +151,10 @@ EOF
     Terraform   = "true"
     environment = var.environment
     project     = var.aws_project
+
+    # Tags for DLM
+    dlm_snapshot = "${var.dlm_policy == null ? "false" : "true"}"
+    dlm_policy   = "${var.dlm_policy == null ? "" : var.dlm_policy}"
   }
 }
 

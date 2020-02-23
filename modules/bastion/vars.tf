@@ -96,3 +96,9 @@ variable "route53_zone_id" {
   description = "zone_id for CNAME in route53"
   type        = string
 }
+
+variable "dlm_policy" {
+  description = "dlm_policy Name"
+  type        = string
+  default     = null
+}
