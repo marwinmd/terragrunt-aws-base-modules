@@ -102,7 +102,7 @@ module "ec2" {
   instance_count = 1
 
   name                        = var.host_name
-  ami                         = data.aws_ami.amazon_linux2.id
+  ami                         = "${var.ami_id == null ? data.aws_ami.amazon_linux2.id : var.ami_id}"
   key_name                    = var.key_name
   instance_type               = var.instance_type
   cpu_credits                 = var.cpu_credits

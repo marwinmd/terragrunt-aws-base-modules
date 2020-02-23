@@ -33,6 +33,12 @@ variable "iam_instance_profile" {
   default = ""
 }
 
+variable "ami_id" {
+  description = "Use ami_id instead of searching the AMI2 from Amazon"
+  type        = string
+  default     = null
+}
+
 variable "host_name" {
   type    = string
   default = ""
