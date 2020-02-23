@@ -50,12 +50,12 @@ variable "domain_name" {
 }
 
 variable "instance_type" {
-  default = "t3.nano"
+  default = "t3a.nano"
 }
 
 variable "cpu_credits" {
   description = "cpu_credits for t3. standard or unlimited"
-  default = "unlimited"
+  default = "standard"
 }
 
 variable "key_name" {

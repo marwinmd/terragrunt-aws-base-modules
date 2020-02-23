@@ -139,6 +139,11 @@ module "ec2" {
   ]
   user_data = <<EOF
 #!/bin/bash
+dd if=/dev/zero of=/var/swapfile bs=10240 count=50000
+mkswap /var/swapfile ; chmod 600 /var/swapfile
+echo "/var/swapfile     swap           swap    defaults  1   1" >> /etc/fstab
+swapon -a
+
 hostnamectl set-hostname ${var.host_name}.${var.domain_name}
 yes | amazon-linux-extras install epel
 yum install -y git ansible
