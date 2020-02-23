@@ -180,3 +180,13 @@ resource "aws_route53_record" "internal" {
 
    records = module.ec2.private_ip
 }
+
+resource "aws_route53_record" "public" {
+  count   = var.public_zone_id == null ? 0 : 1
+  zone_id = var.public_zone_id
+  name    = var.host_name
+  ttl     = 60
+  type    = "A"
+
+   records = module.ec2.public_ip
+}

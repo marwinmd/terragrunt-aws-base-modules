@@ -97,6 +97,12 @@ variable "route53_zone_id" {
   type        = string
 }
 
+variable "public_zone_id" {
+  description = "zone_id for public_fqdn route53"
+  type        = string
+  default     = null
+}
+
 variable "dlm_policy" {
   description = "dlm_policy Name"
   type        = string
