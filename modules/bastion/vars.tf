@@ -108,3 +108,9 @@ variable "dlm_policy" {
   type        = string
   default     = null
 }
+
+variable "create_elastic_ip" {
+  type        = bool
+  description = "create elastic IP for bastion host"
+  default     = false
+}

@@ -96,6 +96,24 @@ module "sg_to_bastion" {
 #   }
 # }
 
+resource "aws_eip" "bastion" {
+  count    = var.create_elastic_ip ? 1 : 0
+  vpc      = true
+
+  tags = {
+    Name        = var.host_name
+    Terraform   = "true"
+    environment = var.environment
+    project     = var.aws_project
+  }
+}
+
+resource "aws_eip_association" "eip_assoc" {
+  count    = var.create_elastic_ip ? 1 : 0
+  instance_id   = module.ec2.id[0]
+  allocation_id = aws_eip.bastion.0.id
+}
+
 module "ec2" {
   source = "terraform-aws-modules/ec2-instance/aws"
 
@@ -188,5 +206,5 @@ resource "aws_route53_record" "public" {
   ttl     = 60
   type    = "A"
 
-   records = module.ec2.public_ip
+   records = [var.create_elastic_ip ? aws_eip.bastion.0.public_ip : module.ec2.public_ip[0]]
 }
