@@ -21,7 +21,7 @@ variable "name" {
 variable "private_domain" {
   description = "domain of private route53 on VPC"
   type        = string
-  default     = ""
+  default     = "local"
 }
 
 variable "cidr" {
