@@ -137,11 +137,14 @@ module "ec2" {
       encrypted   = true
     },
   ]
+
+  # swap cannot be added in Ansible at a later time, because yum needs the memory
+  # for the insallation of ansible...
   user_data = <<EOF
 #!/bin/bash
-dd if=/dev/zero of=/var/swapfile bs=10240 count=50000
+dd if=/dev/zero of=/var/swapfile bs=10240 count=150000
 mkswap /var/swapfile ; chmod 600 /var/swapfile
-echo "/var/swapfile     swap           swap    defaults  1   1" >> /etc/fstab
+echo "/var/swapfile swap swap defaults 0 0" >> /etc/fstab
 swapon -a
 
 hostnamectl set-hostname ${var.host_name}.${var.domain_name}
