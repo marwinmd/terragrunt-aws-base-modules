@@ -155,7 +155,7 @@ systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
 mkdir /root/git ; cd /root/git
 git clone https://github.com/Rendanic/aws_ec2_ossetup.git
 cd aws_ec2_ossetup/ansible
-./security.sh | tee -a ~/cloud-init.log
+./security.sh -e 'security_fail2ban_ignoreip="${var.fail2ban_ignoreip}"' | tee -a ~/cloud-init.log
 
 if [ "${var.create_tinyproxy}" = "true" ] ; then
     ansible-playbook install_docker.yml | tee -a ~/cloud-init.log

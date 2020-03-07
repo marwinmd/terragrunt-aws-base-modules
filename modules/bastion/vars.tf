@@ -114,3 +114,9 @@ variable "create_elastic_ip" {
   description = "create elastic IP for bastion host"
   default     = false
 }
+
+variable "fail2ban_ignoreip" {
+  type        = string
+  description = "optinal String for ignoreip in fail2ban. Be aware! Changing this value invalidates user_data!"
+  default     = "127.0.0.1/8"
+}
