@@ -120,3 +120,9 @@ variable "fail2ban_ignoreip" {
   description = "optinal String for ignoreip in fail2ban. Be aware! Changing this value invalidates user_data!"
   default     = "127.0.0.1/8"
 }
+
+variable "custom_RPMs" {
+  type        = string
+  description = "install custom RPMs on Bastion"
+  default     = null
+}

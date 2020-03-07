@@ -170,6 +170,7 @@ if [ "${var.create_internal_key}" = "true" ] ; then
     chmod 600 /home/ec2-user/.ssh/id_rsa
 fi
 
+${var.custom_RPMs == null ? "" : "yum install -y ${var.custom_RPMs}"}
 yum update -y | tee -a ~/cloud-init.log
 EOF
 
