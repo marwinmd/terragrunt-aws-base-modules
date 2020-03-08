@@ -66,36 +66,6 @@ module "sg_to_bastion" {
     project     = var.aws_project
   }
 }
-
-# module "sg_from_bastion" {
-#   source  = "terraform-aws-modules/security-group/aws"
-#   version = "~> 3.0"
-
-#   name        = "${var.host_name}_from"
-#   description = "SG for access from Bastion"
-#   vpc_id      = var.vpc_id
-
-#   egress_rules = ["all-all"]
-
-#   ingress_with_cidr_blocks = [
-#     {
-#       rule        = "all-icmp"
-#       cidr_blocks = "${module.ec2.private_ip[0]}/32"
-#       description = "Ping from Bastion"
-#     },
-#     {
-#       rule        = "ssh-tcp"
-#       cidr_blocks = "${module.ec2.private_ip[0]}/32"
-#       description = "SSH from Bastion"
-#     }
-#   ]
-#   tags = {
-#     Terraform   = "true"
-#     environment = var.environment
-#     project     = var.aws_project
-#   }
-# }
-
 resource "aws_eip" "bastion" {
   count    = var.create_elastic_ip ? 1 : 0
   vpc      = true
