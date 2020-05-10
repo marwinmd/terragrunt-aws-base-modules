@@ -96,6 +96,12 @@ variable "dlm_policy" {
   default     = null
 }
 
+variable "shelvery_backup" {
+  description = "Add tag shelvery:create_backup to instance resource"
+  type        = bool
+  default     = false
+}
+
 variable "create_elastic_ip" {
   type        = bool
   description = "create elastic IP for bastion host"

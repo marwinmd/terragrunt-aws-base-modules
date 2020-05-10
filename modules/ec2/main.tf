@@ -71,6 +71,9 @@ module "ec2" {
     # Tags for DLM
     dlm_snapshot = "${var.dlm_policy == null ? "false" : "true"}"
     dlm_policy   = "${var.dlm_policy == null ? "" : var.dlm_policy}"
+
+    # Tags for Shelvery
+    "shelvery:create_backup" = var.shelvery_backup
   }
 }
 
