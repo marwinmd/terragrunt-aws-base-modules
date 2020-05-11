@@ -99,7 +99,13 @@ variable "dlm_policy" {
 variable "shelvery_backup" {
   description = "Add tag shelvery:create_backup to instance resource"
   type        = bool
-  default     = false
+  default     = null
+}
+
+variable "custom_tags" {
+  description = "Add tag shelvery:create_backup to instance resource"
+  type        = map
+  default     = { "this_dummy_is_removed_later" = null }
 }
 
 variable "create_elastic_ip" {

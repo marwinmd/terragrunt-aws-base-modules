@@ -63,16 +63,19 @@ module "ec2" {
     },
   ]
 
-  tags = {
+  tags = "${merge(local.common_tags, local.backup_tags, var.custom_tags)}"
+}
+
+locals {
+  common_tags = {
     Terraform   = "true"
     environment = var.environment
     project     = var.aws_project
+  }
 
-    # Tags for DLM
-    dlm_snapshot = "${var.dlm_policy == null ? "false" : "true"}"
-    dlm_policy   = "${var.dlm_policy == null ? "" : var.dlm_policy}"
-
-    # Tags for Shelvery
+  backup_tags = {
+    dlm_snapshot             = "${var.dlm_policy == null ? null : "true"}"
+    dlm_policy               = "${var.dlm_policy == null ? null : var.dlm_policy}"
     "shelvery:create_backup" = var.shelvery_backup
   }
 }
