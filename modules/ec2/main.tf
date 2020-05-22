@@ -25,7 +25,7 @@ resource "aws_eip" "ec2" {
   vpc   = true
 
   tags = {
-    Name        = var.host_name
+    Name        = "${var.name == null ? var.host_name : var.name}"
     Terraform   = "true"
     environment = var.environment
     project     = var.aws_project
@@ -43,7 +43,7 @@ module "ec2" {
 
   instance_count = 1
 
-  name          = var.host_name
+  name          = "${var.name == null ? var.host_name : var.name}"
   ami           = "${var.ami_id == null ? data.aws_ami.amazon_linux2.id : var.ami_id}"
   key_name      = var.key_name
   instance_type = var.instance_type

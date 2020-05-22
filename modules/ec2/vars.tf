@@ -39,6 +39,12 @@ variable "ami_id" {
   default     = null
 }
 
+variable "name" {
+  description = "Instance Name. Default = host_name"
+  type    = string
+  default = null
+}
+
 variable "host_name" {
   type    = string
   default = ""
