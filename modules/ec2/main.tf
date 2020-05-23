@@ -59,7 +59,9 @@ module "ec2" {
     {
       volume_type = "gp2"
       volume_size = var.root_disk_size
-      encrypted   = true
+      delete_on_termination = var.root_disk_termination
+      encrypted   = var.root_disk_encryption
+      kms_key_id  = var.root_kms_key_id
     },
   ]
 

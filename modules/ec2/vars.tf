@@ -55,6 +55,24 @@ variable "root_disk_size" {
   default = 8
 }
 
+variable "root_disk_termination" {
+  description = "Deletion Protection for disk"
+  type    = bool
+  default = true
+}
+
+variable "root_disk_encryption" {
+  description = "Encryption of root disk"
+  type    = bool
+  default = true
+}
+
+variable "root_kms_key_id" {
+  description = "optional encryption key"
+  type    = string
+  default = null
+}
+
 variable "domain_name" {
   type    = string
   default = ""
