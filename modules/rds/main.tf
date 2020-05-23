@@ -22,6 +22,7 @@ module "rds" {
 
    vpc_security_group_ids = var.vpc_security_group_ids
 
+  apply_immediately = var.apply_immediately
   maintenance_window = var.maintenance_window
   backup_window      = var.backup_window
   backup_retention_period = var.backup_retention_period
