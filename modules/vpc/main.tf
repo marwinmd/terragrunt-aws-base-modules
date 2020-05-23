@@ -1,13 +1,3 @@
-
-terraform {
-  backend "s3" {}
-}
-
-provider "aws" {
-  version = "~> 2.18"
-  region  = var.aws_region
-}
-
 module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
