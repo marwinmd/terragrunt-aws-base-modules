@@ -14,7 +14,7 @@ variable "aws_project" {
 }
 
 variable "vpc_id" {
-  description = "CIDvpc_idR of the VPC"
+  description = "vpc_id of the VPC"
   type        = string
 }
 
