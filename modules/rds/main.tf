@@ -29,6 +29,9 @@ module "rds" {
   final_snapshot_identifier = var.final_snapshot_identifier
   snapshot_identifier = var.snapshot_identifier
 
+  allow_major_version_upgrade = var.allow_major_version_upgrade
+  auto_minor_version_upgrade = var.auto_minor_version_upgrade
+  
   enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
 
   subnet_ids = var.subnet_ids
