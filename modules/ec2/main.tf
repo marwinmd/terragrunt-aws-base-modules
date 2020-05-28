@@ -50,9 +50,9 @@ module "ec2" {
   cpu_credits   = var.cpu_credits
   subnet_id     = var.subnet_id
   private_ips   = var.private_ips
-  #private_dns                 = "${var.host_name}.${data.aws_route53_zone.internal.name}"
+  # private_dns is not supported in terraform-aws-modules/ec2-instance/aws
   vpc_security_group_ids      = var.security_group_ids
-  associate_public_ip_address = true
+  associate_public_ip_address = var.associate_public_ip_address
   iam_instance_profile        = var.iam_instance_profile
 
   root_block_device = [
@@ -68,11 +68,17 @@ module "ec2" {
   tags = "${merge(local.common_tags, local.backup_tags, var.custom_tags)}"
 }
 
+data "aws_route53_zone" "internal" {
+  zone_id      = var.route53_zone_id
+}
+
 locals {
   common_tags = {
     Terraform   = "true"
     environment = var.environment
     project     = var.aws_project
+    hostname    = var.host_name == null ? var.name : var.host_name
+    hostname_fqdn = format("%s.%s", var.host_name == null ? var.name : var.host_name, trimsuffix(data.aws_route53_zone.internal.name, "."))
   }
 
   backup_tags = {
