@@ -143,3 +143,15 @@ variable "create_elastic_ip" {
   description = "create elastic IP for bastion host"
   default     = false
 }
+
+variable "ebs_optimized" {
+  description = "If true, the launched EC2 instance will be EBS-optimized"
+  type        = bool
+  default     = false
+}
+
+variable "disable_api_termination" {
+  description = "If true, enables EC2 Instance Termination Protection"
+  type        = bool
+  default     = false
+}

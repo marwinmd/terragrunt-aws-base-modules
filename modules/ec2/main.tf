@@ -55,6 +55,10 @@ module "ec2" {
   associate_public_ip_address = var.associate_public_ip_address
   iam_instance_profile        = var.iam_instance_profile
 
+  ebs_optimized = var.ebs_optimized
+
+  disable_api_termination = var.disable_api_termination
+
   root_block_device = [
     {
       volume_type = "gp2"
