@@ -149,6 +149,8 @@ EOF
     },
   ]
 
+  ebs_block_device = var.ebs_block_device
+
   tags = "${merge(local.common_tags, local.backup_tags, var.custom_tags)}"
 }
 

@@ -184,3 +184,9 @@ variable "security_group_ingres" {
   }))
   default = null
 }
+
+variable "ebs_block_device" {
+  description = "Additional EBS block devices to attach to the instance"
+  type        = list(map(string))
+  default     = []
+}
