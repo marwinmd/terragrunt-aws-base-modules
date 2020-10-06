@@ -174,6 +174,12 @@ variable "install_option" {
   default     = ""
 }
 
+variable "install_option_OS" {
+  type        = string
+  description = "install option in user_data. Be aware: Changing this value results in destroy and add resource"
+  default     = "swap"
+}
+
 variable "security_group_ingres" {
   type = list(object({
     rule = string

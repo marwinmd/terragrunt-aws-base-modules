@@ -111,28 +111,33 @@ module "ec2" {
   # for the insallation of ansible...
   user_data = <<EOF
 #!/bin/bash
-dd if=/dev/zero of=/var/swapfile bs=10240 count=150000
-mkswap /var/swapfile ; chmod 600 /var/swapfile
-echo "/var/swapfile swap swap defaults 0 0" >> /etc/fstab
-swapon -a
-
-hostnamectl set-hostname ${var.host_name}.${var.domain_name}
-yes | amazon-linux-extras install epel
-yum install -y git ansible
-systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
-
-mkdir /root/git ; cd /root/git
-git clone https://github.com/Rendanic/aws_ec2_ossetup.git
-
-cd aws_ec2_ossetup/ansible
-./security.sh -e 'security_fail2ban_ignoreip="${var.fail2ban_ignoreip}"' | tee -a ~/cloud-init.log
-
-if [[ "${var.install_option}" =~ "docker" ]] ; then
-    ansible-playbook install_docker.yml | tee -a ~/cloud-init.log
+if [[ "${var.install_option_OS}" =~ "swap" ]] ; then
+  dd if=/dev/zero of=/var/swapfile bs=10240 count=150000
+  mkswap /var/swapfile ; chmod 600 /var/swapfile
+  echo "/var/swapfile swap swap defaults 0 0" >> /etc/fstab
+  swapon -a
 fi
 
+hostnamectl set-hostname ${var.host_name}.${var.domain_name}
+
+if [[ "${var.install_option_OS}" =~ "amazonlinux2" ]] ; then
+  yes | amazon-linux-extras install epel
+  yum install -y git ansible
+  systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
+
+  mkdir /root/git ; cd /root/git
+  git clone https://github.com/Rendanic/aws_ec2_ossetup.git
+
+  cd aws_ec2_ossetup/ansible
+  ./security.sh -e 'security_fail2ban_ignoreip="${var.fail2ban_ignoreip}"' | tee -a ~/cloud-init.log
+
+  if [[ "${var.install_option}" =~ "docker" ]] ; then
+      ansible-playbook install_docker.yml | tee -a ~/cloud-init.log
+  fi
+
+  yum update -y | tee -a ~/cloud-init.log
+fi
 ${var.custom_RPMs == null ? "" : "yum install -y ${var.custom_RPMs}"}
-yum update -y | tee -a ~/cloud-init.log
 EOF
 
   ebs_optimized = var.ebs_optimized
