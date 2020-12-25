@@ -25,7 +25,7 @@ resource "aws_eip" "ec2" {
   vpc   = true
 
   tags = {
-    Name        = "${var.name == null ? var.host_name : var.name}"
+    Name        = var.name == null ? var.host_name : var.name
     Terraform   = "true"
     environment = var.environment
     project     = var.aws_project
@@ -38,65 +38,13 @@ resource "aws_eip_association" "eip_assoc" {
   allocation_id = aws_eip.ec2.0.id
 }
 
-# module "sg_to_ec2" {
-#   source  = "terraform-aws-modules/security-group/aws"
-#   version = "~> 3.0"
-
-#   name        = "${var.host_name}_to"
-#   description = "SG for access to ${var.host_name}"
-#   vpc_id      = var.vpc_id
-
-#   egress_rules = ["all-all"]
-
-
-#   dynamic "ingress_with_cidr_blocks" {
-#     for_each = [for s in security_group_ingres: {
-#       rule   = s.rule
-#       cidr_blocks = s.cidr_blocks
-#       description = s.description
-#     }]
-
-#     content {
-#       rule           = security_group_ingres.value.rule
-#       cidr_blocks = security_group_ingres.value.cidr_blocks
-#       description = security_group_ingres.value.description
-#     }
-#   }
-
-#   # ingress_with_cidr_blocks = [
-#   #   {
-#   #     rule        = "all-icmp"
-#   #     cidr_blocks = var.cidr_block
-#   #     description = "Ping from VPC"
-#   #   },
-#   #   {
-#   #     rule        = "ssh-tcp"
-#   #     cidr_blocks = "${var.ssh_public_ingress}"
-#   #   },
-#   #   {
-#   #     rule        = "ssh-tcp"
-#   #     cidr_blocks = var.cidr_block
-#   #   },
-#   #   {
-#   #     rule        = "squid-proxy-tcp"
-#   #     cidr_blocks = var.cidr_block
-#   #     description = "TinyProxy"
-#   #   }
-#   # ]
-#   tags = {
-#     Terraform   = "true"
-#     environment = var.environment
-#     project     = var.aws_project
-#   }
-# }
-
 module "ec2" {
   source = "terraform-aws-modules/ec2-instance/aws"
 
   instance_count = 1
 
-  name          = "${var.name == null ? var.host_name : var.name}"
-  ami           = "${var.ami_id == null ? data.aws_ami.amazon_linux2.id : var.ami_id}"
+  name          = var.name == null ? var.host_name : var.name
+  ami           = var.ami_id == null ? data.aws_ami.amazon_linux2.id : var.ami_id
   key_name      = var.key_name
   instance_type = var.instance_type
   cpu_credits   = var.cpu_credits
@@ -120,10 +68,11 @@ fi
 
 hostnamectl set-hostname ${var.host_name}.${var.domain_name}
 
+yum install -y https://s3.${var.aws_region}.amazonaws.com/amazon-ssm-${var.aws_region}/latest/linux_amd64/amazon-ssm-agent.rpm
+systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
+
 if [[ "${var.install_option_OS}" =~ "amazonlinux2" ]] ; then
-  yes | amazon-linux-extras install epel
   yum install -y git ansible
-  systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
 
   mkdir /root/git ; cd /root/git
   git clone https://github.com/Rendanic/aws_ec2_ossetup.git
@@ -146,7 +95,7 @@ EOF
 
   root_block_device = [
     {
-      volume_type = "gp2"
+      volume_type = "gp3"
       volume_size = var.root_disk_size
       delete_on_termination = var.root_disk_termination
       encrypted   = var.root_disk_encryption
@@ -156,7 +105,7 @@ EOF
 
   ebs_block_device = var.ebs_block_device
 
-  tags = "${merge(local.common_tags, local.backup_tags, var.custom_tags)}"
+  tags = merge(local.common_tags, local.backup_tags, var.custom_tags)
 }
 
 data "aws_route53_zone" "internal" {
@@ -173,8 +122,8 @@ locals {
   }
 
   backup_tags = {
-    dlm_snapshot             = "${var.dlm_policy == null ? null : "true"}"
-    dlm_policy               = "${var.dlm_policy == null ? null : var.dlm_policy}"
+    dlm_snapshot             = var.dlm_policy == null ? null : "true"
+    dlm_policy               = var.dlm_policy == null ? null : var.dlm_policy
     "shelvery:create_backup" = var.shelvery_backup
   }
 }
