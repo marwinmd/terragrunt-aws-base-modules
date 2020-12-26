@@ -1,13 +1,3 @@
-terraform {
-  backend "s3" {
-  }
-}
-
-provider "aws" {
-  version = "~> 2.18"
-  region  = var.aws_region
-}
-
 data "aws_caller_identity" "current" {}
 
 data "aws_ami" "amazon_linux2" {
@@ -48,7 +38,7 @@ module "sg_to_bastion" {
     },
     {
       rule        = "ssh-tcp"
-      cidr_blocks = "${var.ssh_public_ingress}"
+      cidr_blocks = var.ssh_public_ingress
     },
     {
       rule        = "ssh-tcp"
@@ -90,7 +80,7 @@ module "ec2" {
   instance_count = 1
 
   name                        = var.host_name
-  ami                         = "${var.ami_id == null ? data.aws_ami.amazon_linux2.id : var.ami_id}"
+  ami                         = var.ami_id == null ? data.aws_ami.amazon_linux2.id : var.ami_id
   key_name                    = var.key_name
   instance_type               = var.instance_type
   cpu_credits                 = var.cpu_credits
@@ -150,8 +140,8 @@ EOF
     project     = var.aws_project
 
     # Tags for DLM
-    dlm_snapshot = "${var.dlm_policy == null ? "false" : "true"}"
-    dlm_policy   = "${var.dlm_policy == null ? "" : var.dlm_policy}"
+    dlm_snapshot = var.dlm_policy == null ? "false" : "true"
+    dlm_policy   = var.dlm_policy == null ? "" : var.dlm_policy
   }
 }
 
@@ -167,6 +157,17 @@ resource "aws_key_pair" "generated_key" {
   count     = var.create_internal_key ? 1 : 0
   key_name   = var.internal_key_name
   public_key = tls_private_key.internal_key.public_key_openssh
+}
+
+resource "aws_route53_record" "proxy" {
+  count = var.create_tinyproxy == true ? 1 : 0
+
+  zone_id = var.route53_zone_id
+  name    = "proxy"
+  type    = "A"
+  ttl     = 60
+
+   records = module.ec2.private_ip
 }
 
 resource "aws_route53_record" "internal" {
