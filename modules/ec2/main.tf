@@ -38,6 +38,25 @@ resource "aws_eip_association" "eip_assoc" {
   allocation_id = aws_eip.ec2.0.id
 }
 
+module "sg" {
+  source  = "terraform-aws-modules/security-group/aws"
+  version = "~> 3.0"
+
+  name        = "sg_${var.name == null ? var.host_name : var.name}"
+  description = "SG attached to Host"
+  vpc_id      = var.vpc_id
+
+  egress_rules = ["all-all"]
+
+  ingress_with_source_security_group_id = var.ingress_sg
+
+  tags = {
+    Terraform   = "true"
+    environment = var.environment
+    project     = var.aws_project
+  }
+}
+
 module "ec2" {
   source = "terraform-aws-modules/ec2-instance/aws"
 
@@ -51,7 +70,8 @@ module "ec2" {
   subnet_id     = var.subnet_id
   private_ips   = var.private_ips
   # private_dns is not supported in terraform-aws-modules/ec2-instance/aws
-  vpc_security_group_ids      = var.security_group_ids
+  vpc_security_group_ids      = compact(concat(var.security_group_ids, [module.sg.this_security_group_id]))
+
   associate_public_ip_address = var.associate_public_ip_address
   iam_instance_profile        = var.iam_instance_profile
 
