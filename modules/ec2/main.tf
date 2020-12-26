@@ -57,37 +57,18 @@ module "ec2" {
 
   # swap cannot be added in Ansible at a later time, because yum needs the memory
   # for the insallation of ansible...
-  user_data = <<EOF
-#!/bin/bash
-if [[ "${var.install_option_OS}" =~ "swap" ]] ; then
-  dd if=/dev/zero of=/var/swapfile bs=10240 count=150000
-  mkswap /var/swapfile ; chmod 600 /var/swapfile
-  echo "/var/swapfile swap swap defaults 0 0" >> /etc/fstab
-  swapon -a
-fi
-
-hostnamectl set-hostname ${var.host_name}.${var.domain_name}
-
-yum install -y https://s3.${var.aws_region}.amazonaws.com/amazon-ssm-${var.aws_region}/latest/linux_amd64/amazon-ssm-agent.rpm
-systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
-
-if [[ "${var.install_option_OS}" =~ "amazonlinux2" ]] ; then
-  yum install -y git ansible
-
-  mkdir /root/git ; cd /root/git
-  git clone https://github.com/Rendanic/aws_ec2_ossetup.git
-
-  cd aws_ec2_ossetup/ansible
-  ./security.sh -e 'security_fail2ban_ignoreip="${var.fail2ban_ignoreip}"' | tee -a ~/cloud-init.log
-
-  if [[ "${var.install_option}" =~ "docker" ]] ; then
-      ansible-playbook install_docker.yml | tee -a ~/cloud-init.log
-  fi
-
-  yum update -y | tee -a ~/cloud-init.log
-fi
-${var.custom_RPMs == null ? "" : "yum install -y ${var.custom_RPMs}"}
-EOF
+  user_data = templatefile("${path.module}/template/user_data.txt",
+    {
+      install_option_OS = var.install_option_OS
+      host_name = var.host_name
+      domain_name = var.domain_name
+      aws_region = var.aws_region
+      http_proxy = var.http_proxy
+      fail2ban_ignoreip = var.fail2ban_ignoreip
+      install_option = var.install_option
+      custom_RPMs = var.custom_RPMs
+    }
+  )
 
   ebs_optimized = var.ebs_optimized
 

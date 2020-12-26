@@ -196,3 +196,9 @@ variable "ebs_block_device" {
   type        = list(map(string))
   default     = []
 }
+
+variable "http_proxy" {
+  description = "http_proxy for EC2 with NAT"
+  type        = string
+  default     = ""
+}

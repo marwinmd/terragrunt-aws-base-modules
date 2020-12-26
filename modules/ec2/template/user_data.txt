@@ -1,0 +1,49 @@
+#!/bin/bash
+if [[ "${install_option_OS}" =~ "swap" ]] ; then
+  dd if=/dev/zero of=/var/swapfile bs=10240 count=150000
+  mkswap /var/swapfile ; chmod 600 /var/swapfile
+  echo "/var/swapfile swap swap defaults 0 0" >> /etc/fstab
+  swapon -a
+fi
+lvextend -r -L +1500m /dev/rootvg/varlv 
+
+hostnamectl set-hostname ${host_name}.${domain_name}
+
+yum install -y https://s3.${aws_region}.amazonaws.com/amazon-ssm-${aws_region}/latest/linux_amd64/amazon-ssm-agent.rpm
+systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
+
+if [[ ! "${http_proxy}" = "" ]] ; then
+
+  echo "http_proxy=${http_proxy}" >> /etc/environment
+  echo "https_proxy=${http_proxy}" >> /etc/environment
+  echo "proxy=http://${http_proxy}" >> /etc/yum.conf
+
+  mkdir -p /etc/systemd/system/amazon-ssm-agent.service.d
+  cat > /etc/systemd/system/amazon-ssm-agent.service.d/10-proxy.conf <<EOF
+[Service]
+Environment="http_proxy=http://${http_proxy}"
+Environment="https_proxy=http://${http_proxy}"
+Environment="no_proxy=169.254.169.254"
+EOF
+
+  systemctl daemon-reload
+  systemctl restart amazon-ssm-agent
+
+fi
+
+if [[ "${install_option_OS}" =~ "amazonlinux2" ]] ; then
+  yum install -y git ansible
+
+  mkdir /root/git ; cd /root/git
+  git clone https://github.com/Rendanic/aws_ec2_ossetup.git
+
+  cd aws_ec2_ossetup/ansible
+  ./security.sh -e 'security_fail2ban_ignoreip="${fail2ban_ignoreip}"' | tee -a ~/cloud-init.log
+
+  if [[ "${install_option}" =~ "docker" ]] ; then
+      ansible-playbook install_docker.yml | tee -a ~/cloud-init.log
+  fi
+
+  yum update -y | tee -a ~/cloud-init.log
+fi
+${custom_RPMs == null ? "" : "yum install -y ${custom_RPMs}"}
