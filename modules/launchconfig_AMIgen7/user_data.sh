@@ -1,7 +1,7 @@
 #!/bin/bash -x
 do_build=1
 
-GEOMETRYSTRING="/:rootlv:2,swap:swaplv:1,/var:varlv:2,/tmp:tmplv:1"
+GEOMETRYSTRING="/:rootlv:2,swap:swaplv:1,/var:varlv:4,/tmp:tmplv:1"
 vg=rootvg
 volume=/dev/xvdb
 MAINTUSR=ec2-user
