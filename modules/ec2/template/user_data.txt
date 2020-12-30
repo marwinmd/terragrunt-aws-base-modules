@@ -13,8 +13,9 @@ systemctl enable amazon-ssm-agent ; systemctl restart amazon-ssm-agent
 
 if [[ ! "${http_proxy}" = "" ]] ; then
 
-  echo "http_proxy=${http_proxy}" >> /etc/environment
-  echo "https_proxy=${http_proxy}" >> /etc/environment
+  echo "http_proxy=http://${http_proxy}" >> /etc/environment
+  echo "https_proxy=http://${http_proxy}" >> /etc/environment
+  echo 'no_proxy="*.s3.amazonaws.com,169.254.169.254"' >> /etc/environment
   echo "proxy=http://${http_proxy}" >> /etc/yum.conf
 
   mkdir -p /etc/systemd/system/amazon-ssm-agent.service.d
