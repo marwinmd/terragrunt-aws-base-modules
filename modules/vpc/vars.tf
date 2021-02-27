@@ -24,6 +24,12 @@ variable "private_domain" {
   default     = "local"
 }
 
+variable "manage_default_vpc" {
+  description = "Should be true to adopt and manage Default VPC"
+  type        = bool
+  default     = false
+}
+
 variable "cidr" {
   description = "CIDR of the VPC"
   type        = string

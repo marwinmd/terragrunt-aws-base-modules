@@ -25,6 +25,8 @@ module "vpc" {
   ssmmessages_endpoint_security_group_ids  = [module.sg_for_ssm.this_security_group_id]
   ssmmessages_endpoint_private_dns_enabled = var.enable_ssm_endpoint
 
+  manage_default_vpc = var.manage_default_vpc
+
   enable_dhcp_options      = var.enable_dhcp_options
   dhcp_options_domain_name = var.private_domain
 
