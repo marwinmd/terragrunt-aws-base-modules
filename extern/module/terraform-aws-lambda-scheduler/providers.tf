@@ -3,6 +3,6 @@ terraform {
 
   required_providers {
     archive = "~> 1"
-    aws     = "~> 2"
+    aws     = "~> 3"
   }
 }
